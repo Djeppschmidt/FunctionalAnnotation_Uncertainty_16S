@@ -1,4 +1,13 @@
 
+#' create taxonomy vs rank-abundance curves
+#'
+#' 
+#' @param ps phyloseq object
+#' @keywords 
+#' @export
+#' @examples
+#' RankAbundanceBurnoulliPlot()
+
 
 #' create taxonomy vs rank-abundance curves
 #'
