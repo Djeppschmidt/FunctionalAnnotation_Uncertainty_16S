@@ -22,6 +22,45 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
   if(either==T){
     # define reference list of names
     if(level=="Species"){ 
+      reftab$fullname<-paste(reftab$Genus, reftab$Species)
+      
+      keepls<-table(reftab[reftab[[genes]]$amoA==1|ref$amoB==1|ref$amoC==1|ref$nxrAB==1,]$fullname)
+      g.AO<-table(ref[ref$amoA==1|ref$amoB==1|ref$amoC==1|ref$nxrAB==1,]$Genus)
+      
+      # establish list of all taxa
+      totalspp<-table(ref$fullname)
+      g.totalspp<-table(ref$Genus)
+      
+      # subset to spp / genera with AOA
+      totalsppsubset<-totalspp[names(totalspp)%in%names(AO)] # subset only to spp with ammonia oxidizers
+      g.totalsppsubset<-g.totalspp[names(g.totalspp)%in%names(g.AO)] # subset to genera with ammonia oxidizers
+      print(identical(names(totalsppsubset), names(AO))) # sanity check
+      print(identical(names(g.totalsppsubset), names(g.AO)))
+      print(names(AO))
+      print(names(g.AO))
+      # calculate the proportion of each genus that has AOA
+      G.Average<-g.AO/g.totalsppsubset
+      Gdf<-data.frame("Average"=G.Average, "Total"=g.totalsppsubset) # producing zero matches
+      print(dim(Gdf))
+      colnames(Gdf)<-c("Names", "Average", "abundance") # this is the error, not right dimensions
+      Gm<-reshape2::melt(Gdf, id.vars=c("Names"), measure.vars=c("Average"))
+      Gm$Names<-as.character(Gm$Names)
+      print("G reflist finished")
+      # make AOA/AOB reference list:
+      # nif100 = all assemblies have minimum set of genes to do N fixation
+      # nif75 = at least 75 % of assemblies have minimum set of genes
+      # nif50 = at least 50 % of assemblies have minimum set of genes
+      # nif25 = at least 25 % of assemblies have minimum set of genes
+      # nif1  = at least 1 assembly has minimum set of genes (all genera with at least one viable diazotroph)
+      
+      AOReflistGenus<-NULL
+      AOReflistGenus$AO100<-Gm$Names[Gm$value==1]
+      AOReflistGenus$AO75<-Gm$Names[Gm$value>0.75]
+      AOReflistGenus$AO50<-Gm$Names[Gm$value>0.5]
+      AOReflistGenus$AO25<-Gm$Names[Gm$value>0.25]
+      AOReflistGenus$AO1<-Gm$Names[Gm$value>0]
+      
+      
       #keep=
       }
     
@@ -197,8 +236,8 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   # needs a sanity check for: make sure path to wget is good
   pattern<-"GCA_.*"
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
-  mkdir(paste(outpath, "/RefSeq/", sep=""))
-  mkdir(paste(outpath, "/GenBank/", sep=""))
+  dir.create(paste(outpath, "/RefSeq/", sep=""))
+  dir.create(paste(outpath, "/GenBank/", sep=""))
   for (i in 1:length(refdir$GenBank.FTP)){
     system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "/GenBank/", sep=""))
   }
