@@ -58,7 +58,7 @@ Finally, make sure that your output directory has a large enough volume to accom
 ```{r, eval=FALSE}
 # run:
 outpath<-"/Downloads"
-binPath<-"/usr/local/bin/"
+binPATH<-"/usr/local/bin/"
 download.Feature.Tables(refdir, outpath, binPATH)
 ```
 
