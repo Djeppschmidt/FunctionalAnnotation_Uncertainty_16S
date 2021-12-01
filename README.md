@@ -1,5 +1,5 @@
 # FunctionalAnnotation_Uncertainty_16S
-This repository provides a customizable pipeline to access and summarize all whole genome annotations for prokaryotic genome assemblies hosted on GenBank and RefSeq. It also contains some functions for visualizing important characteristics of your dataset prior to annotation. It has been formatted as an R package, for easy installation. This pipeline does not include functionality to re-annotate the genomes, rather to summarize existing annotations. This approach requires far less memory and computational power. To install:
+This repository provides a customizable pipeline to access and summarize all whole genome annotations for prokaryotic genome assemblies hosted on GenBank and RefSeq. It also contains some functions for visualizing important characteristics of your dataset prior to annotation. It has been formatted as an R package, for easy installation. This pipeline does not include functionality to re-annotate the genomes, rather to summarize existing annotations. This approach requires far less memory and computational power.
 
 # Pipeline process:
 
