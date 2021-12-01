@@ -1,13 +1,18 @@
 
-#' create taxonomy vs rank-abundance curves
+#' Add gene annotations to phyloseq object
 #'
 #' 
 #' @param ps phyloseq object
+#' @param reftab reference table built from get.genes()
 #' @keywords 
 #' @export
 #' @examples
-#' RankAbundanceBurnoulliPlot()
-
+#' Annotate.phyloseq()
+Annotate.Phyloseq(ps, reftab){
+  tax<-as.data.frame(as.matrix(tax_table(ps)))
+  # add columns of reftab to tax by shared genus and species columns
+  
+}
 
 #' create taxonomy vs rank-abundance curves
 #'
