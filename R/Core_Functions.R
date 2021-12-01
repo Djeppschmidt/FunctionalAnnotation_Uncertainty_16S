@@ -1,16 +1,39 @@
 
-#' Add gene annotations to phyloseq object
+#' Use gene annotations to subset phyloseq object
 #'
-#' 
+#' This function is not finished
 #' @param ps phyloseq object
 #' @param reftab reference table built from get.genes()
+#' @param genes genes to use in the subset
+#' @param either logical, if T then returns taxa that have at least one gene in the list; if F then returns only taxa that have both
+#' @param level one of "Genus" or "Species" to select from dataset
+#' @param cutoff threshold - proportion of assemblies that meet genes criteria for a taxon to keep in the reference taxon. 1 represents all assemblies meet the gene critera
 #' @keywords 
 #' @export
 #' @examples
-#' Annotate.phyloseq()
-Annotate.Phyloseq(ps, reftab){
+#' subset.phyloseq()
+subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1){
   tax<-as.data.frame(as.matrix(tax_table(ps)))
   # add columns of reftab to tax by shared genus and species columns
+  
+  # calculate proportion of assemblies for each taxa that have criteria
+  
+  
+  if(either==T){
+    # define reference list of names
+    if(level=="Species"){ 
+      #keep=
+      }
+    
+    if(level=="Genus"){}
+    # prune taxa by reference list of names
+  }
+  if(either==F){
+    # define reference list of names
+    
+    # prune taxa by reference list of names
+    
+  }
   
 }
 
