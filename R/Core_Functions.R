@@ -235,6 +235,7 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   
   # needs a sanity check for: make sure path to wget is good
   pattern<-"GCA_.*"
+  bin<-Sys.getenv("PATH")
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
   dir.create(paste(outpath, "/RefSeq/", sep=""))
   dir.create(paste(outpath, "/GenBank/", sep=""))
@@ -248,7 +249,7 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   for (i in 1:length(refdir$RefSeq.FTP)){
     system(paste("wget https:", substring(refdir$RefSeq.FTP[i], 5), "/", str_match(refdir$RefSeq.FTP[i], pattern = "GCF_.*"), "_feature_table.txt.gz", " -P ", outpath, "/RefSeq/", sep=""))
   } 
-  
+  Sys.setenv("PATH" = bin)
 }
 
 
@@ -262,10 +263,14 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
 #' @examples
 #' unzip()
 unzip<-function(x, a){
+  
+  bin<-Sys.getenv("PATH")
   if(a==1){Sys.setenv("PATH" = "/usr/bin/")
     system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/GenBank/", x, sep=""))} # unzip the files
   if(a==2){Sys.setenv("PATH" = "/usr/bin/")
     system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/RefSeq/", x, sep=""))}
+  
+  Sys.setenv("PATH" = bin)
 }
 
 
@@ -373,7 +378,7 @@ compile.Functiontable<-function(x,y){
   if(y$index[y$Assembly==x]==2){
     #print(y$RefSeq.FTP[y$Assembly==x])
     #print(y$index[y$Assembly==x])
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     #print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
@@ -389,7 +394,7 @@ compile.Functiontable<-function(x,y){
   }
   # if only Genbank exists, do:
   if(y$index[y$Assembly==x]==1){
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
@@ -405,8 +410,8 @@ compile.Functiontable<-function(x,y){
   
   # if both exist:
   if(y$index[y$Assembly==x]==3){
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
-    file2<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file2<-as.data.frame(as.matrix(read.delim(paste(directory, "/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     #print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
