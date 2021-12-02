@@ -328,7 +328,7 @@ get.genes<-function(refdir, directory, genes){
   
   outtab<-plyr::ldply(refdir$Assembly, compile.Functiontable, refdir)
   outtab[,5:length(genes)]<-sapply(outtab[,5:length(genes)], as.numeric)
-  colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", genes)
+  colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", names(genes))
   outtab
 }
 
