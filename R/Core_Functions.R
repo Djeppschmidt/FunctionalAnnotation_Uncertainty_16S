@@ -231,6 +231,7 @@ RankAbundanceBurnoulliPlot<-function(ps){
 #' @examples
 #' download.Feature.Tables()
 download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
+  require(stringr)
   refdir<-as.data.frame(as.matrix(read.csv(refdir, sep=",")))
   
   # needs a sanity check for: make sure path to wget is good
