@@ -15,14 +15,13 @@
 subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1){
   tax<-as.data.frame(as.matrix(tax_table(ps)))
   # add columns of reftab to tax by shared genus and species columns
-  
+  reftab$fullname<-paste(reftab$Genus, reftab$Species)
   # calculate proportion of assemblies for each taxa that have criteria
   
   
   if(either==T){
     # define reference list of names
     if(level=="Species"){ 
-      reftab$fullname<-paste(reftab$Genus, reftab$Species)
       
       # summarize reftable
       keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])>0])
@@ -44,8 +43,6 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
     
     if(level=="Genus"){
       # genus
-      reftab$fullname<-paste(reftab$Genus, reftab$Species)
-      
       # summarize reftable
       keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])>0])
       
@@ -69,7 +66,6 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
   if(either==F){
     # define reference list of names
     if(level=="Species"){ 
-      reftab$fullname<-paste(reftab$Genus, reftab$Species)
       
       # summarize reftable
       keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
@@ -91,8 +87,6 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
     
     if(level=="Genus"){
       # genus
-      reftab$fullname<-paste(reftab$Genus, reftab$Species)
-      
       # summarize reftable
       keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
       
@@ -104,7 +98,7 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
       
       average<-keepls/totalspp
       pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
-      # calculate the proportion of each genus that has AOA
+      # calculate the proportion of each genus with the given genes
       colnames(pdf)<-c("Names", "Average", "abundance")
       pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
       pm$Names<-as.character(pm$Names)
@@ -114,10 +108,14 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
   }
   if(level=="Species"){
     prune.list<-paste(tax$Genus, tax$Species, sep=" ")%in%pm$Names[pm$Average>=cutoff]
+    ps.out<-prune_taxa(prune.list, ps)
+    return(ps.out)
   }
-  if(level=="Genus"){}
-  prune.list<-pm$Names[pm$]
-  ps.out<-prune_taxa(prune.list)
+  if(level=="Genus"){
+    prune.list<-paste(tax$Genus, tax$Species, sep=" ")%in%pm$Names[pm$Average>=cutoff]
+    ps.out<-prune_taxa(prune.list, ps)
+    return(ps.out)
+    }
 }
 
 #' create taxonomy vs rank-abundance curves
