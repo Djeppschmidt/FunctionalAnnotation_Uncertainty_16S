@@ -24,56 +24,100 @@ subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1
     if(level=="Species"){ 
       reftab$fullname<-paste(reftab$Genus, reftab$Species)
       
-      keepls<-table(reftab[reftab[[genes]]$amoA==1|ref$amoB==1|ref$amoC==1|ref$nxrAB==1,]$fullname)
-      g.AO<-table(ref[ref$amoA==1|ref$amoB==1|ref$amoC==1|ref$nxrAB==1,]$Genus)
+      # summarize reftable
+      keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])>0])
       
       # establish list of all taxa
-      totalspp<-table(ref$fullname)
-      g.totalspp<-table(ref$Genus)
+      totalspp<-table(reftab$fullname)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
       
-      # subset to spp / genera with AOA
-      totalsppsubset<-totalspp[names(totalspp)%in%names(AO)] # subset only to spp with ammonia oxidizers
-      g.totalsppsubset<-g.totalspp[names(g.totalspp)%in%names(g.AO)] # subset to genera with ammonia oxidizers
-      print(identical(names(totalsppsubset), names(AO))) # sanity check
-      print(identical(names(g.totalsppsubset), names(g.AO)))
-      print(names(AO))
-      print(names(g.AO))
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
       # calculate the proportion of each genus that has AOA
-      G.Average<-g.AO/g.totalsppsubset
-      Gdf<-data.frame("Average"=G.Average, "Total"=g.totalsppsubset) # producing zero matches
-      print(dim(Gdf))
-      colnames(Gdf)<-c("Names", "Average", "abundance") # this is the error, not right dimensions
-      Gm<-reshape2::melt(Gdf, id.vars=c("Names"), measure.vars=c("Average"))
-      Gm$Names<-as.character(Gm$Names)
-      print("G reflist finished")
-      # make AOA/AOB reference list:
-      # nif100 = all assemblies have minimum set of genes to do N fixation
-      # nif75 = at least 75 % of assemblies have minimum set of genes
-      # nif50 = at least 50 % of assemblies have minimum set of genes
-      # nif25 = at least 25 % of assemblies have minimum set of genes
-      # nif1  = at least 1 assembly has minimum set of genes (all genera with at least one viable diazotroph)
-      
-      AOReflistGenus<-NULL
-      AOReflistGenus$AO100<-Gm$Names[Gm$value==1]
-      AOReflistGenus$AO75<-Gm$Names[Gm$value>0.75]
-      AOReflistGenus$AO50<-Gm$Names[Gm$value>0.5]
-      AOReflistGenus$AO25<-Gm$Names[Gm$value>0.25]
-      AOReflistGenus$AO1<-Gm$Names[Gm$value>0]
-      
-      
-      #keep=
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("S reflist finished")
       }
     
-    if(level=="Genus"){}
+    if(level=="Genus"){
+      # genus
+      reftab$fullname<-paste(reftab$Genus, reftab$Species)
+      
+      # summarize reftable
+      keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])>0])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$Genus)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("G reflist finished")
+      
+    }
     # prune taxa by reference list of names
   }
   if(either==F){
     # define reference list of names
+    if(level=="Species"){ 
+      reftab$fullname<-paste(reftab$Genus, reftab$Species)
+      
+      # summarize reftable
+      keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$fullname)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("S reflist finished")
+    }
     
-    # prune taxa by reference list of names
-    
+    if(level=="Genus"){
+      # genus
+      reftab$fullname<-paste(reftab$Genus, reftab$Species)
+      
+      # summarize reftable
+      keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$Genus)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("G reflist finished")
+      
+    }
   }
-  
+  if(level=="Species"){
+    prune.list<-paste(tax$Genus, tax$Species, sep=" ")%in%pm$Names[pm$Average>=cutoff]
+  }
+  if(level=="Genus"){}
+  prune.list<-pm$Names[pm$]
+  ps.out<-prune_taxa(prune.list)
 }
 
 #' create taxonomy vs rank-abundance curves
@@ -238,17 +282,17 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   pattern<-"GCA_.*"
   bin<-Sys.getenv("PATH")
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
-  dir.create(paste(outpath, "/RefSeq/", sep=""))
-  dir.create(paste(outpath, "/GenBank/", sep=""))
+  dir.create(paste(outpath, "RefSeq/", sep=""))
+  dir.create(paste(outpath, "GenBank/", sep=""))
   for (i in 1:length(refdir$GenBank.FTP)){
-    system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "/GenBank/", sep=""))
+    system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "GenBank/", sep=""))
   }
   
   # do same for refseq
   pattern<-"GCF_.*"
   Sys.setenv("PATH" = "/usr/local/bin/")
   for (i in 1:length(refdir$RefSeq.FTP)){
-    system(paste("wget https:", substring(refdir$RefSeq.FTP[i], 5), "/", str_match(refdir$RefSeq.FTP[i], pattern = "GCF_.*"), "_feature_table.txt.gz", " -P ", outpath, "/RefSeq/", sep=""))
+    system(paste("wget https:", substring(refdir$RefSeq.FTP[i], 5), "/", str_match(refdir$RefSeq.FTP[i], pattern = "GCF_.*"), "_feature_table.txt.gz", " -P ", outpath, "RefSeq/", sep=""))
   } 
   Sys.setenv("PATH" = bin)
 }
@@ -263,13 +307,13 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
 #' @export
 #' @examples
 #' unzip()
-unzip<-function(x, a){
+unzip<-function(x, a, directory){
   
   bin<-Sys.getenv("PATH")
   if(a==1){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/GenBank/", x, sep=""))} # unzip the files
+    system(paste("gunzip", directory, "GenBank/", x, sep=""))} # unzip the files
   if(a==2){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/RefSeq/", x, sep=""))}
+    system(paste("gunzip", directory, "RefSeq/", x, sep=""))}
   
   Sys.setenv("PATH" = bin)
 }
@@ -309,13 +353,18 @@ compile.Flist<-function(refdir, path1, path2){
 #' get.genes()
 get.genes<-function(refdir, directory, genes){
   
+  path1<-paste(directory, "GenBank/", sep="")
+  path2<-paste(directory, "RefSeq/", sep="")
+  
+  # get list of zipped files
+  files1<-list.files(paste(directory, "GenBank/", sep="")) 
+  files2<-list.files(paste(directory, "RefSeq/", sep=""))
+  unzip(files1,1,directory)
+  unzip(files2,2,directory)
+  
   # get list of unzipped files
-  files1<-list.files(paste(directory, "/GenBank/", sep="")) 
-  files2<-list.files(paste(directory, "/RefSeq/", sep=""))
-  path1<-paste(directory, "/GenBank/", sep="")
-  path2<-paste(directory, "/RefSeq/", sep="")
-  
-  
+  files1<-list.files(paste(directory, "GenBank/", sep="")) 
+  files2<-list.files(paste(directory, "RefSeq/", sep=""))
   
   # make an index for whether reference files exist for genbank and refseq. this will be used to determine which files to use (refseq first, then genbank)
   files<-compile.Flist(refdir, path1, path2) 
