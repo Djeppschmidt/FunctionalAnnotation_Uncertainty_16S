@@ -15,26 +15,107 @@
 subset.Phyloseq<-function(ps, reftab, genes, either=T, level="Species", cutoff=1){
   tax<-as.data.frame(as.matrix(tax_table(ps)))
   # add columns of reftab to tax by shared genus and species columns
-  
+  reftab$fullname<-paste(reftab$Genus, reftab$Species)
   # calculate proportion of assemblies for each taxa that have criteria
   
   
   if(either==T){
     # define reference list of names
     if(level=="Species"){ 
-      #keep=
+      
+      # summarize reftable
+      keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])>0])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$fullname)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("S reflist finished")
       }
     
-    if(level=="Genus"){}
+    if(level=="Genus"){
+      # genus
+      # summarize reftable
+      keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])>0])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$Genus)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("G reflist finished")
+      
+    }
     # prune taxa by reference list of names
   }
   if(either==F){
     # define reference list of names
+    if(level=="Species"){ 
+      
+      # summarize reftable
+      keepls<-table(reftab$fullname[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$fullname)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus that has AOA
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("S reflist finished")
+    }
     
-    # prune taxa by reference list of names
-    
+    if(level=="Genus"){
+      # genus
+      # summarize reftable
+      keepls<-table(reftab$Genus[rowSums(reftab[,colnames(reftab)%in%genes])==length(genes)])
+      
+      # establish list of all taxa
+      totalspp<-table(reftab$Genus)
+      # subset total to spp / genera with genes
+      totalsppsubset<-totalspp[names(totalspp)%in%names(keepls)] 
+      print(identical(names(totalsppsubset), names(keepls))) # sanity check
+      
+      average<-keepls/totalspp
+      pdf<-data.frame("Average"=average, "Total"=totalsppsubset)
+      # calculate the proportion of each genus with the given genes
+      colnames(pdf)<-c("Names", "Average", "abundance")
+      pm<-reshape2::melt(pdf, id.vars=c("Names"), measure.vars=c("Average"))
+      pm$Names<-as.character(pm$Names)
+      print("G reflist finished")
+      
+    }
   }
-  
+  if(level=="Species"){
+    prune.list<-paste(tax$Genus, tax$Species, sep=" ")%in%pm$Names[pm$Average>=cutoff]
+    ps.out<-prune_taxa(prune.list, ps)
+    return(ps.out)
+  }
+  if(level=="Genus"){
+    prune.list<-paste(tax$Genus, tax$Species, sep=" ")%in%pm$Names[pm$Average>=cutoff]
+    ps.out<-prune_taxa(prune.list, ps)
+    return(ps.out)
+    }
 }
 
 #' create taxonomy vs rank-abundance curves
@@ -192,24 +273,26 @@ RankAbundanceBurnoulliPlot<-function(ps){
 #' @examples
 #' download.Feature.Tables()
 download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
+  require(stringr)
   refdir<-as.data.frame(as.matrix(read.csv(refdir, sep=",")))
   
   # needs a sanity check for: make sure path to wget is good
   pattern<-"GCA_.*"
+  bin<-Sys.getenv("PATH")
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
-  mkdir(paste(outpath, "/RefSeq/", sep=""))
-  mkdir(paste(outpath, "/GenBank/", sep=""))
+  dir.create(paste(outpath, "RefSeq/", sep=""))
+  dir.create(paste(outpath, "GenBank/", sep=""))
   for (i in 1:length(refdir$GenBank.FTP)){
-    system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "/GenBank/", sep=""))
+    system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "GenBank/", sep=""))
   }
   
   # do same for refseq
   pattern<-"GCF_.*"
   Sys.setenv("PATH" = "/usr/local/bin/")
   for (i in 1:length(refdir$RefSeq.FTP)){
-    system(paste("wget https:", substring(refdir$RefSeq.FTP[i], 5), "/", str_match(refdir$RefSeq.FTP[i], pattern = "GCF_.*"), "_feature_table.txt.gz", " -P ", outpath, "/RefSeq/", sep=""))
+    system(paste("wget https:", substring(refdir$RefSeq.FTP[i], 5), "/", str_match(refdir$RefSeq.FTP[i], pattern = "GCF_.*"), "_feature_table.txt.gz", " -P ", outpath, "RefSeq/", sep=""))
   } 
-  
+  Sys.setenv("PATH" = bin)
 }
 
 
@@ -222,11 +305,15 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
 #' @export
 #' @examples
 #' unzip()
-unzip<-function(x, a){
+unzip<-function(x, a, directory){
+  
+  bin<-Sys.getenv("PATH")
   if(a==1){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/GenBank/", x, sep=""))} # unzip the files
+    system(paste("gunzip", directory, "GenBank/", x, sep=""))} # unzip the files
   if(a==2){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip ~/Documents/GitHub/SoilHealthDB/RefSeq/", x, sep=""))}
+    system(paste("gunzip", directory, "RefSeq/", x, sep=""))}
+  
+  Sys.setenv("PATH" = bin)
 }
 
 
@@ -264,13 +351,18 @@ compile.Flist<-function(refdir, path1, path2){
 #' get.genes()
 get.genes<-function(refdir, directory, genes){
   
+  path1<-paste(directory, "GenBank/", sep="")
+  path2<-paste(directory, "RefSeq/", sep="")
+  
+  # get list of zipped files
+  files1<-list.files(paste(directory, "GenBank/", sep="")) 
+  files2<-list.files(paste(directory, "RefSeq/", sep=""))
+  unzip(files1,1,directory)
+  unzip(files2,2,directory)
+  
   # get list of unzipped files
-  files1<-list.files(paste(directory, "/GenBank/", sep="")) 
-  files2<-list.files(paste(directory, "/RefSeq/", sep=""))
-  path1<-paste(directory, "/GenBank/", sep="")
-  path2<-paste(directory, "/RefSeq/", sep="")
-  
-  
+  files1<-list.files(paste(directory, "GenBank/", sep="")) 
+  files2<-list.files(paste(directory, "RefSeq/", sep=""))
   
   # make an index for whether reference files exist for genbank and refseq. this will be used to determine which files to use (refseq first, then genbank)
   files<-compile.Flist(refdir, path1, path2) 
@@ -284,7 +376,7 @@ get.genes<-function(refdir, directory, genes){
   
   outtab<-plyr::ldply(refdir$Assembly, compile.Functiontable, refdir)
   outtab[,5:length(genes)]<-sapply(outtab[,5:length(genes)], as.numeric)
-  colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", genes)
+  colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", names(genes))
   outtab
 }
 
@@ -334,7 +426,7 @@ compile.Functiontable<-function(x,y){
   if(y$index[y$Assembly==x]==2){
     #print(y$RefSeq.FTP[y$Assembly==x])
     #print(y$index[y$Assembly==x])
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     #print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
@@ -350,7 +442,7 @@ compile.Functiontable<-function(x,y){
   }
   # if only Genbank exists, do:
   if(y$index[y$Assembly==x]==1){
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
@@ -366,8 +458,8 @@ compile.Functiontable<-function(x,y){
   
   # if both exist:
   if(y$index[y$Assembly==x]==3){
-    file1<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
-    file2<-as.data.frame(as.matrix(read.delim(paste("/Volumes/My\ Passport\ for\ Mac/MacMini/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file2<-as.data.frame(as.matrix(read.delim(paste(directory, "/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     #print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
