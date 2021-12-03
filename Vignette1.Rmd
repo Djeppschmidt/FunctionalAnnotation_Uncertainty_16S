@@ -43,7 +43,7 @@ Import this file into R:
 # refdir from https://www.ncbi.nlm.nih.gov/genome/browse#!/prokaryotes/
 # filter set to only bacteria and archaea
 # and only whole genomes
-refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/SoilHealthDB/prokaryotes.csv", sep=",")))
+refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv", sep=",")))
 ```
 
 Next we need to download the annotated feature tables. These tables are placed in an output directory of your choice, in a folder corresponding to the source of the annotations (GenBank or RefSeq). There are several inputs required for this function:
@@ -57,7 +57,9 @@ The bin folder where wget is compiled may not be in the same location bin folder
 Finally, make sure that your output directory has a large enough volume to accommodate at least 30 GB of data. I sometimes use an external hard drive for this type of task. 
 ```{r, eval=FALSE}
 # run:
-outpath<-"/Downloads"
+refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv", sep=",")))
+refdir<-"~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv"
+outpath<-"~/Dowloads/"
 binPATH<-"/usr/local/bin/"
 download.Feature.Tables(refdir, outpath, binPATH)
 ```
