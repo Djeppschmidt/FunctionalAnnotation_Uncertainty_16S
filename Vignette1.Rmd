@@ -61,6 +61,13 @@ refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnot
 refdir<-"~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv"
 outpath<-"~/Dowloads/"
 binPATH<-"/usr/local/bin/"
+
+# make ouput directories
+
+dir.create(paste(outpath, "RefSeq/", sep=""))
+dir.create(paste(outpath, "GenBank/", sep=""))
+
+# Download feature tables
 download.Feature.Tables(refdir, outpath, binPATH)
 ```
 
