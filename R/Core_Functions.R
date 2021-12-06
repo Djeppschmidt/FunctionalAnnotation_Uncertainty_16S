@@ -275,13 +275,17 @@ RankAbundanceBurnoulliPlot<-function(ps){
 download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   require(stringr)
   refdir<-as.data.frame(as.matrix(read.csv(refdir, sep=",")))
-  
+  setwd(outpath)
   # needs a sanity check for: make sure path to wget is good
   pattern<-"GCA_.*"
   bin<-Sys.getenv("PATH")
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
   dir.create(paste(outpath, "RefSeq/", sep=""))
   dir.create(paste(outpath, "GenBank/", sep=""))
+  
+  if(!dir.exists(paste(outpath, "RefSeq/", sep=""))){stop("Directory not made")}
+  if(!dir.exists(paste(outpath, "GenBank/", sep=""))){stop("Directory not made")}
+  
   for (i in 1:length(refdir$GenBank.FTP)){
     system(paste("wget https:", substring(refdir$GenBank.FTP[i], 5), "/", str_match(refdir$GenBank.FTP[i], pattern = "GCA_.*"), "_feature_table.txt.gz", " -P ", outpath, "GenBank/", sep=""))
   }
