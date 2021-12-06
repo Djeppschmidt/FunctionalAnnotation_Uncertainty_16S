@@ -280,8 +280,8 @@ download.Feature.Tables<-function(refdir, outpath, binPATH="/usr/local/bin/"){
   pattern<-"GCA_.*"
   bin<-Sys.getenv("PATH")
   Sys.setenv("PATH" = binPATH) # necessary to direct out or R bin / access BASH functions
- # dir.create(paste(outpath, "RefSeq/", sep=""))
-  #dir.create(paste(outpath, "GenBank/", sep=""))
+  dir.create(paste(outpath, "RefSeq/", sep=""))
+  dir.create(paste(outpath, "GenBank/", sep=""))
   
   #if(!dir.exists(paste(outpath, "RefSeq/", sep=""))){stop("Directory not made")}
   #if(!dir.exists(paste(outpath, "GenBank/", sep=""))){stop("Directory not made")}
