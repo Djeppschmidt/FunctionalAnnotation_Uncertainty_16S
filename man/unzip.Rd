@@ -4,7 +4,7 @@
 \alias{unzip}
 \title{this function unzips the annotation features (gene annotations) for each assembly in refseq and genbank}
 \usage{
-unzip(x, a)
+unzip(x, a, directory)
 }
 \arguments{
 \item{x}{list of files}
