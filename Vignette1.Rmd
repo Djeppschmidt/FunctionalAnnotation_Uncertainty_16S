@@ -59,13 +59,13 @@ Finally, make sure that your output directory has a large enough volume to accom
 # run:
 refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv", sep=",")))
 refdir<-"~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv"
-outpath<-"~/Dowloads/"
+outpath<-"~/Downloads/"
 binPATH<-"/usr/local/bin/"
 
 # make ouput directories
 
-dir.create(paste(outpath, "RefSeq/", sep=""))
-dir.create(paste(outpath, "GenBank/", sep=""))
+#dir.create(paste(outpath, "RefSeq", sep=""))
+#dir.create(paste(outpath, "GenBank", sep=""))
 
 # Download feature tables
 download.Feature.Tables(refdir, outpath, binPATH)
