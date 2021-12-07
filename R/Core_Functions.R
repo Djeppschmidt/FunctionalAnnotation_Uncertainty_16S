@@ -389,10 +389,10 @@ get.genes<-function(refdir, directory, genes){
 #' @examples
 #' match.gene()
 match.gene<-function(x, type, file1, file2=NULL){
-  if(type==1){ifelse(any(str_detect(file1$symbol, pattern=x)), 1, 0)}
+  if(type==1){out<-ifelse(any(str_detect(file1$symbol, pattern=x)), 1, 0)}
   
-  if(type==2){ifelse(any(str_detect(file1$symbol, pattern=x))|any(str_detect(file2$symbol, pattern=x)), 1, 0)}
- 
+  if(type==2){out<-ifelse(any(str_detect(file1$symbol, pattern=x))|any(str_detect(file2$symbol, pattern=x)), 1, 0)}
+ out
 }
 
 
