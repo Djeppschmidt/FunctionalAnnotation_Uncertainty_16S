@@ -354,16 +354,9 @@ compile.Flist<-function(refdir, path1, path2){
 #' @examples
 #' get.genes()
 get.genes<-function(refdir, directory, genes){
-  
-  path1<-paste(directory, "GenBank/", sep="")
-  path2<-paste(directory, "RefSeq/", sep="")
-  
-  # get list of zipped files
-  files1<-list.files(paste(directory, "GenBank/", sep="")) 
-  files2<-list.files(paste(directory, "RefSeq/", sep=""))
-  unzip(files1,1,directory)
-  unzip(files2,2,directory)
-  
+  # define paths to files
+  path1<-paste(outpath, "GenBank/", sep="")
+  path2<-paste(outpath, "RefSeq/", sep="")
   # get list of unzipped files
   files1<-list.files(paste(directory, "GenBank/", sep="")) 
   files2<-list.files(paste(directory, "RefSeq/", sep=""))
@@ -378,6 +371,7 @@ get.genes<-function(refdir, directory, genes){
     refdir$assembly[i]<-paste("GCF_", str_split(refdir$RefSeq.FTP[i], pattern="_")[[1]][2], sep="")
   }
   
+  # compile table
   outtab<-plyr::ldply(refdir$Assembly, compile.Functiontable, refdir)
   outtab[,5:length(genes)]<-sapply(outtab[,5:length(genes)], as.numeric)
   colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", names(genes))
