@@ -417,7 +417,7 @@ compile.Functiontable<-function(x,y,directory){
     Strain<-y[y$Assembly==assembly,3] # strain name
     # test condition
     gene<-rep(NA, length(genes))
-    name(gene)<-genes
+    names(gene)<-genes
     
     out<-c(assembly, Genus, Species, Strain, gene)
   }
