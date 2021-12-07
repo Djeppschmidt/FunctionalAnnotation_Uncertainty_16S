@@ -70,6 +70,19 @@ binPATH<-"/usr/local/bin/"
 
 # Download feature tables
 download.Feature.Tables(refdir, outpath, binPATH)
+
+
+# Unzip files
+# only need to do this once for each download
+
+path1<-paste(outpath, "GenBank/", sep="")
+path2<-paste(outpath, "RefSeq/", sep="")
+  
+# get list of zipped files
+files1<-list.files(paste(outpath, "GenBank/", sep="")) 
+files2<-list.files(paste(outpath, "RefSeq/", sep=""))
+unzip(files1,1,path1)
+unzip(files2,2,path2)
 ```
 
 ## Summarize the reference tables
@@ -77,6 +90,9 @@ download.Feature.Tables(refdir, outpath, binPATH)
 This function takes a vector of gene names / symbols. An example is "nifH". You may include as many as you like in this vector. The output will be a table with Genus, Species, Strain, Accession number, and a column for each gene. Rows are unique genome assemblies. The value in the column will be zero if the assembly does not have the gene; and 1 if it does.
 
 ```{r, eval=FALSE}
+
+
+
 # run:
 # refdir = reference table
 # directory = same directory from the previous function (where the GenBank and RefSeq folders exist)
