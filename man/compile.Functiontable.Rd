@@ -4,10 +4,14 @@
 \alias{compile.Functiontable}
 \title{Compiles summary table of which assemblies have each gene.}
 \usage{
-compile.Functiontable(x, y)
+compile.Functiontable(x, y, directory)
 }
 \arguments{
 \item{x}{element from refdir$Assembly. This is implemented within ldply}
+
+\item{y}{will be the reference table with all metadata}
+
+\item{directory}{path to files}
 }
 \description{
 Output table has columns for Genus, Species, Strain, Assembly ID, and each of the genes of interest
@@ -15,12 +19,3 @@ Output table has columns for Genus, Species, Strain, Assembly ID, and each of th
 \examples{
 compile.Functiontable()
 }
-\keyword{all}
-\keyword{be}
-\keyword{metadata}
-\keyword{reference}
-\keyword{table}
-\keyword{the}
-\keyword{will}
-\keyword{with}
-\keyword{y}

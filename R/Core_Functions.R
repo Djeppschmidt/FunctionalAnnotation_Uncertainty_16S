@@ -372,7 +372,7 @@ get.genes<-function(refdir, directory, genes){
   }
   
   # compile table
-  outtab<-plyr::ldply(refdir$Assembly, compile.Functiontable, refdir)
+  outtab<-plyr::ldply(refdir$Assembly, compile.Functiontable, refdir, directory)
   outtab[,5:length(genes)]<-sapply(outtab[,5:length(genes)], as.numeric)
   colnames(outtab)<-c("assembly", "Genus", "Species", "Strain", names(genes))
   outtab
@@ -400,11 +400,13 @@ match.gene<-function(x, type){
 #'
 #' Output table has columns for Genus, Species, Strain, Assembly ID, and each of the genes of interest
 #' @param x element from refdir$Assembly. This is implemented within ldply
-#' @keywords y will be the reference table with all metadata
+#' @param y will be the reference table with all metadata
+#' @param directory path to files
+#' @keywords 
 #' @export
 #' @examples
 #' compile.Functiontable()
-compile.Functiontable<-function(x,y){
+compile.Functiontable<-function(x,y,directory){
   # if neither file exists, do:
   if(y$index[y$Assembly==x]==0){
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
@@ -456,8 +458,8 @@ compile.Functiontable<-function(x,y){
   
   # if both exist:
   if(y$index[y$Assembly==x]==3){
-    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
-    file2<-as.data.frame(as.matrix(read.delim(paste(directory, "/RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file2<-as.data.frame(as.matrix(read.delim(paste(directory, "RefSeq/", paste(str_match(y$RefSeq.FTP[y$Assembly==x], pattern = "GCF_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     #print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")

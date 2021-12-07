@@ -81,8 +81,11 @@ path2<-paste(outpath, "RefSeq/", sep="")
 # get list of zipped files
 files1<-list.files(paste(outpath, "GenBank/", sep="")) 
 files2<-list.files(paste(outpath, "RefSeq/", sep=""))
-unzip(files1,1,path1)
-unzip(files2,2,path2)
+
+# run unzip
+# a either 1 (GenBank) or 2 (RefSeq) directory
+lapply(files1, unzip, a=1, directory=outpath)
+lapply(files2, unzip, a=2, directory=outpath)
 ```
 
 ## Summarize the reference tables
