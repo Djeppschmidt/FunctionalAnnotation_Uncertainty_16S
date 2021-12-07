@@ -4,7 +4,7 @@
 \alias{match.gene}
 \title{subroutine for compile.Functiontable}
 \usage{
-match.gene(x, type)
+match.gene(x, type, file1, file2 = NULL)
 }
 \arguments{
 \item{x}{gene symbol to search for}
