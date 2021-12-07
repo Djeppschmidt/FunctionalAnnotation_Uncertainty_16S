@@ -388,7 +388,7 @@ get.genes<-function(refdir, directory, genes){
 #' @export
 #' @examples
 #' match.gene()
-match.gene<-function(x, type){
+match.gene<-function(x, type, file1, file2=NULL){
   if(type==1){ifelse(any(str_detect(file1$symbol, pattern=x)), 1, 0)}
   
   if(type==2){ifelse(any(str_detect(file1$symbol, pattern=x))|any(str_detect(file2$symbol, pattern=x)), 1, 0)}
@@ -436,7 +436,7 @@ compile.Functiontable<-function(x,y,directory){
     #print("labels")
     # test condition
     
-    gene<-sapply(genes, match.gene, type=1)
+    gene<-sapply(genes, match.gene, type=1, file1)
     out<-c(assembly, Genus, Species, Strain, gene)
     
   }
@@ -451,7 +451,7 @@ compile.Functiontable<-function(x,y,directory){
     Strain<-y[y$Assembly==assembly,3] # strain name
     # test condition
     
-    gene<-sapply(genes, match.gene, type=1)
+    gene<-sapply(genes, match.gene, type=1, file1)
     out<-c(assembly, Genus, Species, Strain, gene)
   }
   
@@ -469,7 +469,7 @@ compile.Functiontable<-function(x,y,directory){
     #print("labels")
     # test condition
     
-    gene<-sapply(genes, match.gene, type=2)
+    gene<-sapply(genes, match.gene, type=2, file1=file1, file2=file2)
     out<-c(assembly, Genus, Species, Strain, gene)
     
     
