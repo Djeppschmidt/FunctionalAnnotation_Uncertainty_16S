@@ -20,6 +20,7 @@ To install this package:
 install.packages("devtools")
 library(devtools)
 devtools::install_github('Djeppschmidt/ProkaryoteGeneAnnotation')
+library(ProkaryoteGeneAnnotation)
 ```
 
 There are three steps to this process:
@@ -57,7 +58,7 @@ The bin folder where wget is compiled may not be in the same location bin folder
 Finally, make sure that your output directory has a large enough volume to accommodate at least 30 GB of data. I sometimes use an external hard drive for this type of task. 
 ```{r, eval=FALSE}
 # run:
-refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv", sep=",")))
+
 refdir<-"~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv"
 outpath<-"~/Downloads/"
 binPATH<-"/usr/local/bin/"
@@ -77,9 +78,15 @@ This function takes a vector of gene names / symbols. An example is "nifH". You 
 
 ```{r, eval=FALSE}
 # run:
-# refdir = same reference table from above
+# refdir = reference table
 # directory = same directory from the previous function (where the GenBank and RefSeq folders exist)
 # genes = vector of genes
+refdir<-as.data.frame(as.matrix(read.csv("~/Documents/GitHub/ProkaryoteGeneAnnotation/GenomeChromosomeReference.csv", sep=",")))
+
+# define list of genes
+
+genes<-c("amoA", "amoB", "amoC")
+
 gene.tab<-get.genes(refdir, outpath, genes)
 ```
 

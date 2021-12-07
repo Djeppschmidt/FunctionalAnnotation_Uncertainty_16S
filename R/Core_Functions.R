@@ -313,9 +313,9 @@ unzip<-function(x, a, directory){
   
   bin<-Sys.getenv("PATH")
   if(a==1){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip", directory, "GenBank/", x, sep=""))} # unzip the files
+    system(paste("gunzip ", directory, "GenBank/", x, sep=""))} # unzip the files
   if(a==2){Sys.setenv("PATH" = "/usr/bin/")
-    system(paste("gunzip", directory, "RefSeq/", x, sep=""))}
+    system(paste("gunzip ", directory, "RefSeq/", x, sep=""))}
   
   Sys.setenv("PATH" = bin)
 }
