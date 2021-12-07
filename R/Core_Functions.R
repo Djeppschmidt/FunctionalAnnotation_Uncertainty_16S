@@ -389,7 +389,7 @@ get.genes<-function(refdir, directory, genes){
 #' @examples
 #' match.gene()
 match.gene<-function(x, type){
-  if(type==1){ ifelse(any(str_detect(file1$symbol, pattern=x)), 1, 0)}
+  if(type==1){ifelse(any(str_detect(file1$symbol, pattern=x)), 1, 0)}
   
   if(type==2){ifelse(any(str_detect(file1$symbol, pattern=x))|any(str_detect(file2$symbol, pattern=x)), 1, 0)}
  
@@ -442,7 +442,7 @@ compile.Functiontable<-function(x,y,directory){
   }
   # if only Genbank exists, do:
   if(y$index[y$Assembly==x]==1){
-    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "/GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
+    file1<-as.data.frame(as.matrix(read.delim(paste(directory, "GenBank/", paste(str_match(y$GenBank.FTP[y$Assembly==x], pattern = "GCA_.*"), "_feature_table.txt", sep=""), sep=""))))
     assembly<-y$Assembly[y$Assembly==x] #paste(str_split(x, pattern="_")[[1]][1], str_split(x, pattern="_")[[1]][2], sep="_") # name of assembly
     print(assembly)
     # paste("GCF_", str_split(y$RefSeq.FTP, pattern="_")[[1]][2], sep="")
